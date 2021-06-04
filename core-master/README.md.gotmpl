@@ -1,0 +1,101 @@
+# cloudbees-core
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+[CloudBees CI](https://www.cloudbees.com/products/continuous-integration) is the continuous integration platform architected for the enterprise. It provides:
+
+* DevOps at scale
+* Resilience and high availability
+* Easy management
+* Enterprise grade security
+
+## TL;DR;
+
+```console
+$ helm repo add cloudbees https://charts.cloudbees.com/public/cloudbees
+$ helm install cloudbees/cloudbees-core --name <release name>
+```
+
+## Introduction
+
+This chart bootstraps a CloudBees CI deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+
+## Prerequisites
+  - Kubernetes 1.14 or higher
+  - Helm 3.0.2 or higher
+
+{{ template "chart.requirementsSection" . }}
+
+## Installing the Chart
+
+### Default installation
+
+To install the chart with the release name `cloudbees-core` and hostname `cloudbees-core.example.com`. The default installation requires nginx-ingress controller to be installed. The chart can install the nginx-ingress controller for you. This installation is described in the next section.
+
+```console
+$ helm install cloudbees/cloudbees-core \
+       --name cloudbees-core \
+       --set OperationsCenter.HostName='cloudbees-core.example.com'
+```
+
+The command deploys CloudBees CI on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
+
+### Ingress Controller Installation
+
+The chart is designed, so it can install an ingress-nginx controller.
+The `"ingress-nginx".Enabled` field controls ingress controller installation and setup.
+To install the chart with the release name `cloudbees-core` and hostname cloudbees-core.example.com.
+
+```console
+$ helm install cloudbees/cloudbees-core \
+       --name cloudbees-core \
+       --set "ingress-nginx".Enabled=true
+```
+
+## Uninstalling the Chart
+
+To uninstall/delete the `cloudbees-core` deployment:
+
+```console
+$ helm delete cloudbees-core
+```
+> **NOTE**: The current version of the CloudBees CI Helm Chart only manages the Operation Center.
+Users should manage Managed Master using Operation Center.
+
+The `helm delete` command stops the CloudBees CI deployment than removes the OperationsCenter Center.
+The release is still stored in the Helm database, but it will now have the status deleted.
+If you wish to completely remove the release, use the following variation of the `helm delete` command.
+
+```console
+$ helm delete cloudbees-core --purge
+```
+
+> **IMPORTANT**: The `helm delete` command does NOT remove the persistent volume claims as precaution against data loss.
+You will need to use the `kubectl delete pvc` command to delete the persistent volume claims.
+
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Configuration
+
+Please refer to the chart `values.yaml` to get the exhaustive list of values that can be customized.
+The easiest way to consult it is through the command `helm inspect values cloudbees/cloudbees-core`.
+
+Each property can override a default value with a value that specific to your Kubernetes cluster
+You can provide this values using the `--set` flag on the Helm command line.
+
+Helm also support merging values files together, so that you can create a YAML file for each environment.
+
+### Environment Property Value Files
+Helm provides the option to use a custom property values file to override the default values set in the `values.yaml` file.
+CloudBees recommends creating a custom properties file to override the default for your environments, instead of directly editing the included values.yaml file.
+
+To use an environment property value file with Helm, use the -f option as shown in the following example:
+`helm install cloudbees-core --name cloudbees-core -f example-values.yaml`
+
+You can download the latest version of the `example-values.yaml` file from CloudBees Examples GitHub repository at https://github.com/cloudbees/cloudbees-examples/tree/master/helm-custom-value-file-examples.
+
+## Additional Documentation
+CloudBees provides complete and more detailed installation and operation documentation on the CloudBees web site at https://docs.cloudbees.com/docs/cloudbees-ci/latest/kubernetes-install-guide/
+
+{{ template "chart.valuesSection" . }}

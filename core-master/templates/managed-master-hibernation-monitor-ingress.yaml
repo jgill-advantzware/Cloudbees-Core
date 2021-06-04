@@ -1,0 +1,38 @@
+{{- if .Values.Hibernation.Enabled -}}
+{{- if include "cloudbees-core.needs-ingress" . -}}
+apiVersion: {{ include "ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: managed-master-hibernation-monitor
+  labels:
+{{ include "cloudbees-core.labels" . | indent 4 }}
+  annotations:
+{{ toYaml .Values.OperationsCenter.Ingress.Annotations | indent 4 }}
+{{ if .Values.OperationsCenter.Ingress.Class }}
+    kubernetes.io/ingress.class: {{ .Values.OperationsCenter.Ingress.Class }}
+{{- end }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{- template "ingress.ssl_redirect" . }}"
+spec:
+  rules:
+  -
+{{- if .Values.OperationsCenter.HostName }}
+    host: {{ .Values.OperationsCenter.HostName | quote }}
+{{- end }}
+    http:
+      paths:
+      - path: /hibernation
+        backend:
+          serviceName: managed-master-hibernation-monitor
+          servicePort: 80
+      - path: /hibernation/ns/{{ .Release.Namespace }}
+        backend:
+          serviceName: managed-master-hibernation-monitor
+          servicePort: 80
+{{- if .Values.OperationsCenter.Ingress.tls.Enable }}
+  tls:
+    - hosts:
+        - {{ .Values.OperationsCenter.HostName | quote }}
+      secretName: {{ .Values.OperationsCenter.Ingress.tls.SecretName }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

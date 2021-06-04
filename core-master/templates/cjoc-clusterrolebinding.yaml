@@ -1,0 +1,16 @@
+{{- if and .Values.OperationsCenter.Enabled .Values.rbac.install (include "rbac.install-cluster" .) -}}
+kind: ClusterRoleBinding
+apiVersion: {{ template "rbac.apiVersion" . }}
+metadata:
+  name: cjoc-role-binding-{{ .Release.Namespace }}
+  labels:
+{{ include "cloudbees-core.labels" . | indent 4 }}
+roleRef:
+  apiGroup: {{ template "rbac.apiGroup" . }}
+  kind: ClusterRole
+  name: cjoc-master-management-{{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.rbac.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+{{- end -}}

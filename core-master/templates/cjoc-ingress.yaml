@@ -1,0 +1,41 @@
+{{- if .Values.OperationsCenter.Enabled -}}
+{{- if include "cloudbees-core.needs-ingress" . -}}
+{{- include "ingress.check" . -}}
+apiVersion: {{ include "ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: cjoc
+  labels:
+{{ include "cloudbees-core.labels" . | indent 4 }}
+  annotations:
+{{ toYaml .Values.OperationsCenter.Ingress.Annotations | indent 4 }}
+{{ if .Values.OperationsCenter.Ingress.Class }}
+    kubernetes.io/ingress.class: {{ .Values.OperationsCenter.Ingress.Class }}
+{{- end }}
+{{- if not (include "cloudbees-core.is-openshift" .) }}
+    nginx.ingress.kubernetes.io/app-root: "{{ template "oc.contextpath" . }}/teams-check/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{- template "ingress.ssl_redirect" . }}"
+    # "413 Request Entity Too Large" uploading plugins, increase client_max_body_size
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+{{- end }}
+spec:
+  rules:
+  -
+{{- if .Values.OperationsCenter.HostName }}
+    host: {{ .Values.OperationsCenter.HostName | quote }}
+{{- end }}
+    http:
+      paths:
+      - path: {{ include "oc.contextpath" . }}
+        backend:
+          serviceName: cjoc
+          servicePort: {{ .Values.OperationsCenter.ServicePort }}
+{{- if .Values.OperationsCenter.Ingress.tls.Enable }}
+  tls:
+    - hosts:
+        - {{ .Values.OperationsCenter.HostName | quote }}
+      secretName: {{ .Values.OperationsCenter.Ingress.tls.SecretName }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  core-master:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-11-13T13:15:41.203788+01:00"
+    dependencies:
+    - condition: nginx-ingress.Enabled
+      name: nginx-ingress
+      repository: https://kubernetes-charts.storage.googleapis.com/
+      version: 1.40.2
+    - condition: ingress-nginx.Enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 2.15.0
+    - condition: sidecarinjector.Enabled
+      name: cloudbees-sidecar-injector
+      repository: https://charts.cloudbees.com/public/cloudbees
+      version: 2.1.0
+    description: A Helm chart for Kubernetes
+    digest: 08e1a0de80b33536cf13a15e0e596899fdaf3bf549258a7b023e84a97b76852b
+    name: core-master
+    type: application
+    urls:
+    - https://github.com/bmunozm/helm-charts/core-master-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-11-13T13:15:41.191486+01:00"

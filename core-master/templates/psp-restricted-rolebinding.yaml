@@ -1,0 +1,17 @@
+{{- if include "psp.enabled" . }}
+apiVersion: {{ template "rbac.apiVersion" . }}
+kind: RoleBinding
+metadata:
+  name: "cb:podsecuritypolicy:restricted"
+  labels:
+{{ include "cloudbees-core.labels" . | indent 4 }}
+roleRef:
+  apiGroup: {{ template "rbac.apiGroup" . }}
+  kind: Role
+  name: "cb:podsecuritypolicy:restricted"
+subjects:
+# Authorize all service accounts in a namespace:
+- kind: Group
+  apiGroup: rbac.authorization.k8s.io
+  name: system:serviceaccounts
+{{- end -}}
